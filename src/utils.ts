@@ -1,4 +1,5 @@
-import { TFile, TFolder } from "obsidian";
+import { App, TFile, TFolder } from "obsidian";
+import type { FileExplorerView } from "obsidian-typings";
 
 export class TreeNode {
   // h2-1, h3-2, etc
@@ -199,19 +200,20 @@ export const mm2px = (mm: number) => {
   return Math.round(mm * 3.779527559);
 };
 
-export function traverseFolder(path: TFolder | TFile): TFile[] {
-  if (path instanceof TFile) {
-    if (path.extension == "md") {
-      return [path];
-    } else {
-      return [];
-    }
-  }
-  const arr = [];
-  for (const item of path.children) {
-    arr.push(...traverseFolder(item as TFolder));
-  }
-  return arr;
+export function traverseFolder(folder: TFolder, app: App): TFile[] {
+	const fileExplorerView = app.workspace.getLeavesOfType('file-explorer')[0].view as FileExplorerView
+	
+	const traverse = (folder: TFolder): TFile[] => 
+		fileExplorerView.getSortedFolderItems(folder)
+			.map(treeItem => treeItem.file)
+			.flatMap(abstractFile => abstractFile instanceof TFile && abstractFile.extension === 'md'
+				? [abstractFile]
+				: abstractFile instanceof TFolder
+					? traverse(abstractFile)
+					: []
+			)
+	
+	return traverse(folder)
 }
 
 // copy element attributes

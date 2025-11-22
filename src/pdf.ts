@@ -332,6 +332,7 @@ export async function editPDF(
 
   setOutline(pdfDoc, outlines);
   if (displayMetadata) {
+	// @ts-ignore
     setMetadata(pdfDoc, frontMatter ?? {});
   }
   data = await pdfDoc.save();

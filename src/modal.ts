@@ -106,7 +106,7 @@ export class ExportConfigModal extends Modal {
     const data: ParamType[] = [];
     const docs: DocType[] = [];
     if (this.file instanceof TFolder) {
-      const files = traverseFolder(this.file);
+      const files = traverseFolder(this.file, app);
       for (const file of files) {
         data.push({
           app,
